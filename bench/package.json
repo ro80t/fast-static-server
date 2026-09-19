@@ -7,7 +7,7 @@
     "bench": "node run.js"
   },
   "devDependencies": {
-    "autocannon": "^7.15.0",
+    "autocannon": "^8.0.0",
     "serve": "^14.2.4"
   }
 }
