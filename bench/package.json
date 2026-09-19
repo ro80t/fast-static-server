@@ -1,0 +1,13 @@
+{
+  "name": "fast-static-server-bench",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Throughput/latency benchmark: fast-static-server (Rust) vs npm serve",
+  "scripts": {
+    "bench": "node run.js"
+  },
+  "devDependencies": {
+    "autocannon": "^7.15.0",
+    "serve": "^14.2.4"
+  }
+}
