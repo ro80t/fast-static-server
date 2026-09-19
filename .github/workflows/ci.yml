@@ -32,19 +32,17 @@ jobs:
       - name: Test
         run: cargo test --workspace --verbose
 
-  npm-lint:
+  js-lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
+      - uses: oven-sh/setup-bun@v2
 
-      - run: npm ci
+      - run: bun install --frozen-lockfile
 
       - name: oxlint
-        run: npm run lint
+        run: bun run lint
 
       - name: oxfmt check
-        run: npm run format:check
+        run: bun run format:check

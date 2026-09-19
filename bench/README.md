@@ -3,9 +3,9 @@
 Throughput/latency comparison: `fast-static-server` (Rust) vs npm `serve`, same fixture, same load.
 
 ```sh
-npm install
-npm run bench                                   # defaults: 50 connections, 10s per scenario
-npm run bench -- --duration=5 --connections=20  # override
+bun install                                     # from the repo root (this is a bun workspace)
+bun run bench                                   # defaults: 50 connections, 10s per scenario
+bun run bench -- --duration=5 --connections=20  # override
 ```
 
 Builds the release binary, serves a small HTML file and a 5MB file from both servers in turn
