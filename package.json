@@ -1,5 +1,5 @@
 {
-  "name": "fast-static-server-npm-workspace",
+  "name": "fast-static-server-workspace",
   "private": true,
   "workspaces": [
     "bench"
