@@ -2,6 +2,13 @@
 name = "fast-static-server"
 version.workspace = true
 edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+readme.workspace = true
+description = "Routing/handler library for fast-static-server, an axum-based static file server (Rust port of npm `serve`)."
+keywords = ["http", "static-server", "axum", "file-server"]
+categories = ["web-programming::http-server", "filesystem"]
 
 [dependencies]
 tokio = { workspace = true, features = ["macros", "rt", "fs"] }
