@@ -8,7 +8,7 @@ use axum::{
     Router,
     body::Body,
     extract::{Request, State},
-    http::{HeaderValue, StatusCode, header},
+    http::{HeaderMap, HeaderValue, Method, StatusCode, header},
     middleware::{self, Next},
     response::{Html, IntoResponse, Response},
 };
@@ -104,26 +104,64 @@ async fn handler(State(state): State<Arc<AppState>>, req: Request) -> Response {
         return (StatusCode::FORBIDDEN, "403 Forbidden").into_response();
     };
 
-    match tokio::fs::metadata(&fs_path).await {
-        Ok(meta) if meta.is_dir() => {
+    // Fast path: try the direct candidate first - the file itself, or (for a
+    // directory-style URL) its index.html. `ServeFile` already does an open+stat
+    // internally, so trying it first covers the overwhelming majority of requests
+    // with a single filesystem round trip instead of stat-ing up front to decide
+    // what to open.
+    let is_dir_request = url_path.ends_with('/');
+    let candidate = if is_dir_request {
+        fs_path.join("index.html")
+    } else {
+        fs_path.clone()
+    };
+
+    let method = req.method().clone();
+    let headers = req.headers().clone();
+    let res = serve_file(&candidate, req, state.cache_control.as_ref()).await;
+    if res.status() != StatusCode::NOT_FOUND {
+        return res;
+    }
+
+    // Slow path: the candidate wasn't a plain file. Disambiguate why - a
+    // directory (its index.html, or a listing), an SPA route (fall back to the
+    // root index.html), or genuinely missing. Uncommon relative to the fast
+    // path above, so the extra stat here doesn't matter.
+    let is_dir = tokio::fs::metadata(&fs_path)
+        .await
+        .map(|m| m.is_dir())
+        .unwrap_or(false);
+
+    if is_dir {
+        if !is_dir_request {
             let index = fs_path.join("index.html");
             if is_file(&index).await {
-                serve_file(&index, req, state.cache_control.as_ref()).await
-            } else {
-                directory_listing(&fs_path, &url_path).await
+                let req = rebuild_request(method, headers);
+                return serve_file(&index, req, state.cache_control.as_ref()).await;
             }
         }
-        Ok(meta) if meta.is_file() => serve_file(&fs_path, req, state.cache_control.as_ref()).await,
-        _ => {
-            if state.spa {
-                let root_index = state.root.join("index.html");
-                if is_file(&root_index).await {
-                    return serve_file(&root_index, req, state.cache_control.as_ref()).await;
-                }
-            }
-            (StatusCode::NOT_FOUND, "404 Not Found").into_response()
+        return directory_listing(&fs_path, &url_path).await;
+    }
+
+    if state.spa {
+        let root_index = state.root.join("index.html");
+        if is_file(&root_index).await {
+            let req = rebuild_request(method, headers);
+            return serve_file(&root_index, req, state.cache_control.as_ref()).await;
         }
     }
+
+    (StatusCode::NOT_FOUND, "404 Not Found").into_response()
+}
+
+/// Rebuild a bodyless request from saved parts, for the rare case where the
+/// fast-path candidate missed and a second `ServeFile` call (index.html,
+/// SPA fallback) needs to see the original method/conditional-request headers.
+fn rebuild_request(method: Method, headers: HeaderMap) -> Request {
+    let mut req = Request::new(Body::empty());
+    *req.method_mut() = method;
+    *req.headers_mut() = headers;
+    req
 }
 
 async fn is_file(path: &Path) -> bool {
