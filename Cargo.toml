@@ -2,6 +2,19 @@
 resolver = "2"
 members = ["packages/*"]
 
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+
+[workspace.dependencies]
+tokio = "1"
+axum = "0.8"
+tower = "0.5"
+tower-http = "0.6"
+percent-encoding = "2"
+clap = { version = "4", features = ["derive"] }
+fast-static-server = { path = "packages/fast-static-server" }
+
 [profile.release]
 lto = true
 codegen-units = 1

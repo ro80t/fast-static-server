@@ -1,14 +1,14 @@
 [package]
 name = "fss-cli"
-version = "0.1.0"
-edition = "2024"
+version.workspace = true
+edition.workspace = true
 
 [[bin]]
 name = "fast-static-server"
 path = "src/main.rs"
 
 [dependencies]
-tokio = { version = "1", features = ["rt-multi-thread", "macros", "net"] }
-clap = { version = "4", features = ["derive"] }
-axum = "0.8"
-fast-static-server = { path = "../fast-static-server" }
+tokio = { workspace = true, features = ["rt-multi-thread", "macros", "net"] }
+clap.workspace = true
+axum.workspace = true
+fast-static-server.workspace = true

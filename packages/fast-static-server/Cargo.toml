@@ -1,12 +1,11 @@
 [package]
 name = "fast-static-server"
-version = "0.1.0"
-edition = "2024"
+version.workspace = true
+edition.workspace = true
 
 [dependencies]
-tokio = { version = "1", features = ["macros", "rt", "fs"] }
-axum = "0.8"
-tower = "0.5"
-tower-http = { version = "0.6", features = ["fs", "cors", "trace"] }
-percent-encoding = "2"
-
+tokio = { workspace = true, features = ["macros", "rt", "fs"] }
+axum.workspace = true
+tower.workspace = true
+tower-http = { workspace = true, features = ["fs", "cors", "trace"] }
+percent-encoding.workspace = true
