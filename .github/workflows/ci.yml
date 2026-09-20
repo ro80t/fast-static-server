@@ -32,6 +32,17 @@ jobs:
       - name: Test
         run: cargo test --workspace --verbose
 
+      - name: Publish dry-run (fast-static-server)
+        run: cargo publish --dry-run --no-verify -p fast-static-server
+
+      - name: Publish dry-run (fss-cli)
+        # fss-cli depends on fast-static-server via path+version; cargo resolves that
+        # against the real crates.io index even in a dry run, so this fails until
+        # fast-static-server's first real publish exists there. Drop continue-on-error
+        # once that's done.
+        run: cargo publish --dry-run --no-verify -p fss-cli
+        continue-on-error: true
+
   js-lint:
     runs-on: ubuntu-latest
     steps:

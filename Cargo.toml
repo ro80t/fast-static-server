@@ -17,7 +17,7 @@ tower = "0.5"
 tower-http = "0.6"
 percent-encoding = "2"
 clap = { version = "4", features = ["derive"] }
-fast-static-server = { path = "packages/fast-static-server" }
+fast-static-server = { path = "packages/fast-static-server", version = "0.1.0" }
 
 [profile.release]
 lto = true
