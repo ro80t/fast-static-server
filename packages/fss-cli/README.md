@@ -13,7 +13,7 @@ npm install -g fss-cli
 ```
 
 ```sh
-deno install -gA jsr:@ro80t/fss-cli
+deno install -gA jsr:@robot_official/fss-cli
 ```
 
 All three install the same `fast-static-server` executable. The npm and JSR installs fetch a prebuilt binary for your platform (linux-x64, linux-arm64, darwin-x64, darwin-arm64, win32-x64) - no Rust toolchain needed.

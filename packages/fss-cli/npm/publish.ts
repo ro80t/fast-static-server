@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 // Publishes fss-cli to npm: the per-platform binary packages first, then the main
-// wrapper package. Each packages/fss-cli/npm/platforms/*/bin/ must already contain
-// a built binary (produced by a release build - not part of this script) before
-// publishing, otherwise the platform package would ship without one.
+// wrapper package. Platforms without a built binary in platforms/*/bin/ are skipped
+// with a warning rather than blocking the release - npm's optionalDependencies
+// already degrade gracefully on install for platforms that aren't published yet.
 
 import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
@@ -20,15 +20,22 @@ const platforms = readdirSync(PLATFORMS_DIR, { withFileTypes: true })
   .filter((entry) => entry.isDirectory())
   .map((entry) => entry.name);
 
+let publishedAny = false;
 for (const platform of platforms) {
   const dir = path.join(PLATFORMS_DIR, platform);
   const binDir = path.join(dir, "bin");
   if (!existsSync(binDir) || readdirSync(binDir).length === 0) {
-    throw new Error(
-      `${platform}: missing ${path.relative(NPM_DIR, binDir)} - build the release binary for this platform before publishing`,
-    );
+    console.warn(`skipping ${platform}: no binary in ${path.relative(NPM_DIR, binDir)}`);
+    continue;
   }
   npmPublish(dir);
+  publishedAny = true;
+}
+
+if (!publishedAny) {
+  throw new Error(
+    "no platform binaries found - build at least one release binary before publishing",
+  );
 }
 
 npmPublish(NPM_DIR);

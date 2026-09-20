@@ -1,5 +1,5 @@
 {
-  "name": "@ro80t/fss-cli",
+  "name": "@robot_official/fss-cli",
   "version": "0.1.0",
   "exports": "./mod.ts"
 }

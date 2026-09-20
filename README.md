@@ -8,7 +8,7 @@ A Rust port of the npm [`serve`](https://www.npmjs.com/package/serve) package: s
 cargo install fss-cli
 ```
 
-npm (`npm install -g fss-cli`) and JSR (`deno install -gA jsr:@ro80t/fss-cli`) distributions are set up (see [`packages/fss-cli/npm`](packages/fss-cli/npm) / [`packages/fss-cli/jsr`](packages/fss-cli/jsr)) but not yet published - the release pipeline that builds and ships prebuilt binaries for them doesn't exist yet. `cargo install` is the only working install path today.
+npm (`npm install -g fss-cli`) and JSR (`deno install -gA jsr:@robot_official/fss-cli`) distributions are set up (see [`packages/fss-cli/npm`](packages/fss-cli/npm) / [`packages/fss-cli/jsr`](packages/fss-cli/jsr)) but not yet published - the release pipeline that builds and ships prebuilt binaries for them doesn't exist yet. `cargo install` is the only working install path today.
 
 All three install the same `fast-static-server` executable.
 
