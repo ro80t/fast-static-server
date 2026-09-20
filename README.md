@@ -8,7 +8,7 @@ A Rust port of the npm [`serve`](https://www.npmjs.com/package/serve) package: s
 cargo install fss-cli
 ```
 
-This installs a `fast-static-server` binary.
+npm (`npm install -g fss-cli`) and JSR (`deno install -gA jsr:@robot_official/fss-cli`) distributions are set up (see [`packages/fss-cli/npm`](packages/fss-cli/npm) / [`packages/fss-cli/jsr`](packages/fss-cli/jsr)) but not yet published - the release pipeline that builds and ships prebuilt binaries for them doesn't exist yet. `cargo install` is the only working install path today.
 
 ## Usage
 
@@ -39,16 +39,27 @@ Options:
 - Optional CORS and `Cache-Control` headers
 - Path-traversal protection
 
-## Crates
+## Repository layout
 
-This repository is a Cargo workspace:
+A Cargo workspace (Rust) plus a bun/turbo workspace (JS tooling):
 
 - [`packages/fast-static-server`](packages/fast-static-server) - the routing/handler library
 - [`packages/fss-cli`](packages/fss-cli) - the CLI binary (crate `fss-cli`, produces the `fast-static-server` executable)
+  - [`npm/`](packages/fss-cli/npm) - npm distribution: a thin JS wrapper that resolves the right prebuilt binary via per-platform `optionalDependencies`
+  - [`jsr/`](packages/fss-cli/jsr) - JSR distribution: wraps the npm package via an `npm:` specifier
+- [`bench/`](bench) - throughput/latency benchmark vs npm `serve` (TypeScript, run with bun)
+
+## Development
+
+See [`.github/contributing.md`](.github/contributing.md) for setup, common commands (build/test/lint/format/bench), and PR conventions.
 
 ## Benchmarks
 
-See [`bench/`](bench) for a throughput/latency comparison against npm `serve` (`bun run bench`).
+```sh
+bun run bench
+```
+
+See [`bench/`](bench) for details on the load profile and how to read the results.
 
 ## License
 
