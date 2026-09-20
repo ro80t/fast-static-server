@@ -14,8 +14,8 @@
       "name": "fast-static-server-bench",
       "version": "1.0.0",
       "devDependencies": {
-        "autocannon": "^7.15.0",
-        "serve": "^14.2.4",
+        "autocannon": "^8.0.0",
+        "serve": "^14.2.6",
       },
     },
   },
@@ -23,6 +23,8 @@
     "@assemblyscript/loader": ["@assemblyscript/loader@0.19.23", "", {}, "sha512-ulkCYfFbYj01ie1MDOyxv2F6SpRN1TOj7fQxbP07D6HmeR+gr2JLSmINKjga2emB+b1L2KGrFKBTc+e00p54nw=="],
 
     "@colors/colors": ["@colors/colors@1.5.0", "", {}, "sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ=="],
+
+    "@minimistjs/subarg": ["@minimistjs/subarg@1.0.0", "", { "dependencies": { "minimist": "^1.1.0" } }, "sha512-Q/ONBiM2zNeYUy0mVSO44mWWKYM3UHuEK43PKIOzJCbvUnPoMH1K+gk3cf1kgnCVJFlWmddahQQCmrmBGlk9jQ=="],
 
     "@oxfmt/binding-android-arm-eabi": ["@oxfmt/binding-android-arm-eabi@0.68.0", "", { "os": "android", "cpu": "arm" }, "sha512-dhfYPbzv/h9JgHjNkl2R6sOjUfxDyLGOZVb3g8/ScaTNwwJcYgmHh8kcYFDUhinuy1QAoANCWUvw1jlk+z6gAg=="],
 
@@ -128,7 +130,7 @@
 
     "asynckit": ["asynckit@0.4.0", "", {}, "sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q=="],
 
-    "autocannon": ["autocannon@7.15.0", "", { "dependencies": { "chalk": "^4.1.0", "char-spinner": "^1.0.1", "cli-table3": "^0.6.0", "color-support": "^1.1.1", "cross-argv": "^2.0.0", "form-data": "^4.0.0", "has-async-hooks": "^1.0.0", "hdr-histogram-js": "^3.0.0", "hdr-histogram-percentiles-obj": "^3.0.0", "http-parser-js": "^0.5.2", "hyperid": "^3.0.0", "lodash.chunk": "^4.2.0", "lodash.clonedeep": "^4.5.0", "lodash.flatten": "^4.4.0", "manage-path": "^2.0.0", "on-net-listen": "^1.1.1", "pretty-bytes": "^5.4.1", "progress": "^2.0.3", "reinterval": "^1.1.0", "retimer": "^3.0.0", "semver": "^7.3.2", "subarg": "^1.0.0", "timestring": "^6.0.0" }, "bin": { "autocannon": "autocannon.js" } }, "sha512-NaP2rQyA+tcubOJMFv2+oeW9jv2pq/t+LM6BL3cfJic0HEfscEcnWgAyU5YovE/oTHUzAgTliGdLPR+RQAWUbg=="],
+    "autocannon": ["autocannon@8.0.0", "", { "dependencies": { "@minimistjs/subarg": "^1.0.0", "chalk": "^4.1.0", "char-spinner": "^1.0.1", "cli-table3": "^0.6.0", "color-support": "^1.1.1", "cross-argv": "^2.0.0", "form-data": "^4.0.0", "has-async-hooks": "^1.0.0", "hdr-histogram-js": "^3.0.0", "hdr-histogram-percentiles-obj": "^3.0.0", "http-parser-js": "^0.5.2", "hyperid": "^3.0.0", "lodash.chunk": "^4.2.0", "lodash.clonedeep": "^4.5.0", "lodash.flatten": "^4.4.0", "manage-path": "^2.0.0", "on-net-listen": "^1.1.1", "pretty-bytes": "^5.4.1", "progress": "^2.0.3", "reinterval": "^1.1.0", "retimer": "^3.0.0", "semver": "^7.3.2", "timestring": "^6.0.0" }, "bin": { "autocannon": "autocannon.js" } }, "sha512-fMMcWc2JPFcUaqHeR6+PbmEpTxCrPZyBUM95oG4w3ngJ8NfBNas/ZXA+pTHXLqJ0UlFVTcy05GC25WxKx/M20A=="],
 
     "balanced-match": ["balanced-match@1.0.2", "", {}, "sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw=="],
 
@@ -341,8 +343,6 @@
     "strip-final-newline": ["strip-final-newline@2.0.0", "", {}, "sha512-BrpvfNAE3dcvq7ll3xVumzjKjZQ5tI1sEUIKr3Uoks0XUl45St3FlatVqef9prk4jRDzhW6WZg+3bk93y6pLjA=="],
 
     "strip-json-comments": ["strip-json-comments@2.0.1", "", {}, "sha512-4gB8na07fecVVkOI6Rs4e7T6NOTki5EmL7TUduTs6bu3EdnSycntVJ4re8kgZA+wx9IueI2Y11bfbgwtzuE0KQ=="],
-
-    "subarg": ["subarg@1.0.0", "", { "dependencies": { "minimist": "^1.1.0" } }, "sha512-RIrIdRY0X1xojthNcVtgT9sjpOGagEUKpZdgBUi054OEPFo282yg+zE+t1Rj3+RqKq2xStL7uUHhY+AjbC4BXg=="],
 
     "supports-color": ["supports-color@7.2.0", "", { "dependencies": { "has-flag": "^4.0.0" } }, "sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw=="],
 

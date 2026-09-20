@@ -14,5 +14,5 @@ categories = ["web-programming::http-server", "filesystem"]
 tokio = { workspace = true, features = ["macros", "rt", "fs"] }
 axum.workspace = true
 tower.workspace = true
-tower-http = { workspace = true, features = ["fs", "cors", "trace"] }
+tower-http = { workspace = true, features = ["fs", "cors"] }
 percent-encoding.workspace = true

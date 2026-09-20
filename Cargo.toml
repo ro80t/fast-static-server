@@ -14,7 +14,7 @@ readme = "README.md"
 tokio = "1"
 axum = "0.8"
 tower = "0.5"
-tower-http = "0.6"
+tower-http = "0.7"
 percent-encoding = "2"
 clap = { version = "4", features = ["derive"] }
 fast-static-server = { path = "packages/fast-static-server", version = "0.1.0" }
