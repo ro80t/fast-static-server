@@ -1,5 +1,5 @@
 {
-  "name": "@robot_official/fss-cli-darwin-x64",
+  "name": "@ro80t/fss-cli-darwin-x64",
   "version": "0.1.0",
   "description": "fast-static-server prebuilt binary for darwin-x64 - installed automatically by fss-cli, not for direct use.",
   "license": "MIT OR Apache-2.0",

@@ -3,11 +3,11 @@
 const { spawnSync } = require("node:child_process");
 
 const PLATFORM_PACKAGES = {
-  "linux-x64": "@robot_official/fss-cli-linux-x64",
-  "linux-arm64": "@robot_official/fss-cli-linux-arm64",
-  "darwin-x64": "@robot_official/fss-cli-darwin-x64",
-  "darwin-arm64": "@robot_official/fss-cli-darwin-arm64",
-  "win32-x64": "@robot_official/fss-cli-win32-x64",
+  "linux-x64": "@ro80t/fss-cli-linux-x64",
+  "linux-arm64": "@ro80t/fss-cli-linux-arm64",
+  "darwin-x64": "@ro80t/fss-cli-darwin-x64",
+  "darwin-arm64": "@ro80t/fss-cli-darwin-arm64",
+  "win32-x64": "@ro80t/fss-cli-win32-x64",
 };
 
 function resolveBinary() {
