@@ -1,1 +1,1 @@
-../README.md
+packages/fss-cli/README.md
