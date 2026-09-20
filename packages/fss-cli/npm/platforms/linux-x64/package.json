@@ -1,0 +1,20 @@
+{
+  "name": "@robot_official/fss-cli-linux-x64",
+  "version": "0.1.0",
+  "description": "fast-static-server prebuilt binary for linux-x64 - installed automatically by fss-cli, not for direct use.",
+  "license": "MIT OR Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ro80t/fast-static-server.git",
+    "directory": "packages/fss-cli/npm/platforms/linux-x64"
+  },
+  "files": [
+    "bin/"
+  ],
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "x64"
+  ]
+}

@@ -19,15 +19,15 @@ bun install
 
 ## Common commands
 
-| Task | Command |
-| --- | --- |
-| Build | `cargo build --workspace` |
-| Test | `cargo test --workspace` |
-| Lint (Rust) | `cargo clippy --workspace --all-targets -- -D warnings` |
-| Format (Rust) | `cargo fmt --all` |
-| Lint (JS) | `bun run lint` (or `turbo run lint`) |
-| Format (JS) | `bun run format` / `bun run format:check` |
-| Benchmark | `bun run bench` |
+| Task          | Command                                                 |
+| ------------- | ------------------------------------------------------- |
+| Build         | `cargo build --workspace`                               |
+| Test          | `cargo test --workspace`                                |
+| Lint (Rust)   | `cargo clippy --workspace --all-targets -- -D warnings` |
+| Format (Rust) | `cargo fmt --all`                                       |
+| Lint (JS)     | `bun run lint` (or `turbo run lint`)                    |
+| Format (JS)   | `bun run format` / `bun run format:check`               |
+| Benchmark     | `bun run bench`                                         |
 
 All of these run in CI (`.github/workflows/ci.yml`) - a PR won't merge unless they pass.
 
@@ -42,7 +42,7 @@ All of these run in CI (`.github/workflows/ci.yml`) - a PR won't merge unless th
 
 - Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `chore:`, `refactor:`, ...) - see `git log` for examples.
 - Keep PRs focused; a bug fix doesn't need to bundle unrelated refactors.
-- Explain *why* in the PR description when a change isn't self-evident from the diff (e.g. a platform-specific bugfix, a benchmark result driving a design choice).
+- Explain _why_ in the PR description when a change isn't self-evident from the diff (e.g. a platform-specific bugfix, a benchmark result driving a design choice).
 
 ## License
 

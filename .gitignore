@@ -1,3 +1,4 @@
 /target
 **/node_modules
 .turbo
+packages/fss-cli/npm/platforms/*/bin/

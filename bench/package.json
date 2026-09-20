@@ -4,7 +4,7 @@
   "private": true,
   "description": "Throughput/latency benchmark: fast-static-server (Rust) vs npm serve",
   "scripts": {
-    "bench": "node run.js"
+    "bench": "bun run.ts"
   },
   "devDependencies": {
     "autocannon": "^8.0.0",

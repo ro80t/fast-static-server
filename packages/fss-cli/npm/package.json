@@ -1,0 +1,45 @@
+{
+  "name": "fss-cli",
+  "version": "0.1.0",
+  "description": "CLI for fast-static-server: serve a directory over HTTP, a fast Rust port of npm `serve`.",
+  "keywords": [
+    "cli",
+    "http-server",
+    "serve",
+    "static-server"
+  ],
+  "homepage": "https://github.com/ro80t/fast-static-server",
+  "license": "MIT OR Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ro80t/fast-static-server.git",
+    "directory": "packages/fss-cli/npm"
+  },
+  "bin": {
+    "fast-static-server": "bin.js"
+  },
+  "files": [
+    "bin.js",
+    "lib.js"
+  ],
+  "os": [
+    "linux",
+    "darwin",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
+  "main": "lib.js",
+  "optionalDependencies": {
+    "@robot_official/fss-cli-darwin-arm64": "0.1.0",
+    "@robot_official/fss-cli-darwin-x64": "0.1.0",
+    "@robot_official/fss-cli-linux-arm64": "0.1.0",
+    "@robot_official/fss-cli-linux-x64": "0.1.0",
+    "@robot_official/fss-cli-win32-x64": "0.1.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
