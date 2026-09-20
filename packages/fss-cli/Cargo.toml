@@ -5,13 +5,17 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
-readme = "README.md"
+readme = "./README.md"
 description = "CLI for fast-static-server: serve a directory over HTTP, a fast Rust port of npm `serve`."
 keywords = ["cli", "static-server", "http-server", "serve"]
 categories = ["command-line-utilities", "web-programming::http-server"]
 
 [[bin]]
 name = "fast-static-server"
+path = "src/main.rs"
+
+[[bin]]
+name = "fss"
 path = "src/main.rs"
 
 [dependencies]
