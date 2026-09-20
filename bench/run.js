@@ -10,7 +10,7 @@
 const path = require("node:path");
 const fs = require("node:fs");
 const os = require("node:os");
-const { execFileSync, spawn } = require("node:child_process");
+const { execFile, execFileSync, spawn } = require("node:child_process");
 const autocannon = require("autocannon");
 
 const REPO_ROOT = path.resolve(__dirname, "..");
@@ -83,6 +83,57 @@ const SCENARIOS = [
   { name: `large (${LARGE_FILE_MB}MB file)`, path: "/large.bin" },
 ];
 
+const CURL_DEVNULL = process.platform === "win32" ? "NUL" : "/dev/null";
+const CROSS_CHECK_DURATION = 3;
+
+function curlOnce(url) {
+  return new Promise((resolve, reject) => {
+    const start = Date.now();
+    execFile("curl", ["-s", "-o", CURL_DEVNULL, "-w", "%{size_download}", url], (err, stdout) => {
+      if (err) return reject(err);
+      resolve({ ms: Date.now() - start, bytes: Number(stdout) });
+    });
+  });
+}
+
+// Cross-checks the large-file number against a real transfer, bypassing autocannon
+// entirely: raw `curl` processes, one TCP connection per request, no shared client-side
+// event loop to bottleneck on. Confirms whether a slow "large" result is the server or
+// the benchmark client.
+async function curlCrossCheck(url, connections) {
+  const deadline = Date.now() + CROSS_CHECK_DURATION * 1000;
+  const start = Date.now();
+  let count = 0;
+  let totalBytes = 0;
+  let totalMs = 0;
+  let errors = 0;
+
+  while (Date.now() < deadline) {
+    const batch = await Promise.all(
+      Array.from({ length: connections }, () =>
+        curlOnce(url).catch(() => {
+          errors++;
+          return null;
+        }),
+      ),
+    );
+    for (const r of batch) {
+      if (!r) continue;
+      count++;
+      totalBytes += r.bytes;
+      totalMs += r.ms;
+    }
+  }
+
+  const elapsedSec = (Date.now() - start) / 1000;
+  return {
+    "req/sec": Math.round(count / elapsedSec),
+    "latency avg (ms)": Number((totalMs / count).toFixed(2)),
+    "throughput (MB/s)": (totalBytes / elapsedSec / 1024 / 1024).toFixed(2),
+    errors,
+  };
+}
+
 async function benchmarkTarget(name, spawnServer, fixtureDir) {
   const port = claimPort();
   const child = spawnServer(fixtureDir, port);
@@ -99,11 +150,19 @@ async function benchmarkTarget(name, spawnServer, fixtureDir) {
       url: baseUrl + scenario.path,
       connections: CONNECTIONS,
       duration: DURATION,
+      // autocannon's receive-side work (buffering/discarding response bodies) runs
+      // single-threaded by default and becomes the bottleneck itself on the large-file
+      // scenario well before the server does - spread it across worker threads.
+      workers: 4,
     });
   }
 
+  process.stdout.write(`  [${name}] large file, curl cross-check ...\n`);
+  const largeScenario = SCENARIOS.find((s) => s.path === "/large.bin");
+  const curlCheck = await curlCrossCheck(baseUrl + largeScenario.path, CONNECTIONS);
+
   await killChild(child);
-  return results;
+  return { results, curlCheck };
 }
 
 function toRows(target, results) {
@@ -133,13 +192,13 @@ async function main() {
   console.log(`Fixture: ${fixtureDir}`);
   console.log(`Load profile: ${CONNECTIONS} connections, ${DURATION}s per scenario\n`);
 
-  const rustResults = await benchmarkTarget(
+  const rust = await benchmarkTarget(
     "fast-static-server",
     (dir, port) => spawn(RUST_BIN, [dir, "-l", String(port)]),
     fixtureDir,
   );
 
-  const serveResults = await benchmarkTarget(
+  const serve = await benchmarkTarget(
     "serve",
     (dir, port) => spawn(process.execPath, [serveEntry, dir, "-l", String(port)]),
     fixtureDir,
@@ -148,7 +207,15 @@ async function main() {
   fs.rmSync(fixtureDir, { recursive: true, force: true });
 
   console.log("\nResults:");
-  console.table([...toRows("fast-static-server", rustResults), ...toRows("serve", serveResults)]);
+  console.table([...toRows("fast-static-server", rust.results), ...toRows("serve", serve.results)]);
+
+  console.log(
+    `\nLarge-file curl cross-check (${CONNECTIONS} connections, ${CROSS_CHECK_DURATION}s, one TCP connection per request - no shared client bottleneck):`,
+  );
+  console.table([
+    { target: "fast-static-server", ...rust.curlCheck },
+    { target: "serve", ...serve.curlCheck },
+  ]);
 }
 
 main().catch((err) => {
