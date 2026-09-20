@@ -16,7 +16,7 @@ use percent_encoding::{AsciiSet, NON_ALPHANUMERIC, percent_decode_str, utf8_perc
 use tower::ServiceExt;
 use tower_http::{cors::CorsLayer, services::ServeFile};
 
-/// Characters that must be percent-encoded in a single path segment (keeps `.`, `-`, `_`, `~` readable).
+/// Chars left unescaped in a percent-encoded path segment.
 const PATH_SEGMENT: &AsciiSet = &NON_ALPHANUMERIC
     .remove(b'-')
     .remove(b'_')
@@ -26,21 +26,12 @@ const PATH_SEGMENT: &AsciiSet = &NON_ALPHANUMERIC
 pub struct AppState {
     pub root: PathBuf,
     pub spa: bool,
-    /// Pre-built `Cache-Control` value applied to served files only (not directory
-    /// listings or 404s). `None` means: send none, matching npm `serve`'s default.
+    /// `None` means no header, matching npm `serve`'s default.
     pub cache_control: Option<HeaderValue>,
 }
 
-/// Build the router: same shape whether invoked from `main` or from tests, so tests
-/// exercise the exact routing/handler code the binary serves.
-///
-/// `debug` gates the per-request log line (like `serve -d`); npm `serve` is silent by
-/// default, and logging every request unconditionally would also throttle throughput
-/// under load, so it stays off unless asked for.
-///
-/// `cache_seconds`, when set, adds `Cache-Control: public, max-age=<seconds>` to file
-/// responses. Conditional requests (304 via `Last-Modified`/`If-Modified-Since`) already
-/// work with no flag needed - that's handled by the underlying file service.
+/// `debug` gates per-request logging (off by default: npm `serve` is silent, and
+/// logging unconditionally would throttle throughput under load).
 pub fn build_app(
     root: PathBuf,
     spa: bool,
@@ -84,7 +75,7 @@ async fn log_middleware(req: Request, next: Next) -> Response {
     res
 }
 
-/// Resolve a URL path against `root`, rejecting any attempt to escape it (`..`).
+/// Resolves a URL path against `root`, rejecting `..` traversal.
 fn sanitize_path(root: &Path, url_path: &str) -> Option<PathBuf> {
     let decoded = percent_decode_str(url_path).decode_utf8().ok()?;
     let mut path = root.to_path_buf();
@@ -104,16 +95,12 @@ async fn handler(State(state): State<Arc<AppState>>, req: Request) -> Response {
         return (StatusCode::FORBIDDEN, "403 Forbidden").into_response();
     };
 
-    // `ServeFile` isn't safe to point at an arbitrary path without knowing its type
-    // first: opening a directory succeeds on Unix (unlike Windows), and only fails
-    // once something tries to read it - which surfaces as a broken response body
-    // instead of a clean 404. So stat first to find out what we're dealing with.
+    // Stat first: opening a directory with `ServeFile` succeeds on Unix (unlike
+    // Windows) and only errors once the body is read, so a blind open would return
+    // a broken response instead of a clean 404.
     match tokio::fs::metadata(&fs_path).await {
         Ok(meta) if meta.is_file() => serve_file(&fs_path, req, state.cache_control.as_ref()).await,
         Ok(meta) if meta.is_dir() => {
-            // index.html is virtually always a regular file when present, so trying
-            // it directly (rather than stat-ing it first too) is safe and saves a
-            // filesystem round trip on the common case of a directory with an index.
             let index = fs_path.join("index.html");
             let res = serve_file(&index, req, state.cache_control.as_ref()).await;
             if res.status() != StatusCode::NOT_FOUND {
@@ -163,11 +150,9 @@ async fn directory_listing(dir: &Path, url_path: &str) -> Response {
             entries.push((name.to_string(), is_dir));
         }
     }
-    // npm `serve` sorts entries by name alone (no directories-first grouping) - match it.
+    // npm `serve` sorts by name alone, no directories-first grouping.
     entries.sort_by(|a, b| a.0.cmp(&b.0));
 
-    // Normalize to a trailing slash so hrefs built as `{base}{name}` stay correct
-    // whether the request path had a trailing slash or not (e.g. `/dir` vs `/dir/`).
     let base = if url_path.ends_with('/') {
         url_path.to_string()
     } else {

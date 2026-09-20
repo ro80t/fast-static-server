@@ -1,8 +1,5 @@
-//! Behavioral-compatibility tests against the npm `serve` package.
-//!
-//! Expected values here were captured by running the real package locally
-//! (`npx serve <fixture-dir>`) against the same fixture layout used below,
-//! and comparing status codes / headers / bodies against this router.
+//! Behavioral-compatibility tests against the npm `serve` package. Expected values
+//! were captured by running the real package locally against the same fixtures.
 
 use std::{
     fs,
@@ -87,7 +84,6 @@ async fn returns_404_for_missing_file_without_spa() {
 
 #[tokio::test]
 async fn spa_mode_rewrites_unknown_routes_to_index() {
-    // matches `serve -s`: unknown routes fall back to the root index.html instead of 404
     let fx = Fixture::new();
     let app = build_app(fx.root.clone(), true, false, false, None);
     let res = app
@@ -104,7 +100,7 @@ async fn spa_mode_rewrites_unknown_routes_to_index() {
 
 #[tokio::test]
 async fn lists_directory_alphabetically_when_no_index_html() {
-    // real `serve` sorts directory entries by name only; it does not group directories first
+    // no directories-first grouping, unlike some listings
     let fx = Fixture::new();
     fs::create_dir_all(fx.root.join("nolisting/zzz_dir")).unwrap();
     let app = build_app(fx.root.clone(), false, false, false, None);
@@ -125,8 +121,7 @@ async fn lists_directory_alphabetically_when_no_index_html() {
 
 #[tokio::test]
 async fn directory_listing_links_work_without_trailing_slash() {
-    // real `serve` serves the same listing for `/dir` and `/dir/`; the emitted links must
-    // resolve to the same place in both cases (absolute paths, not relative to `/dir`'s parent)
+    // links must be absolute, not relative to `/dir`'s parent
     let fx = Fixture::new();
     let app = build_app(fx.root.clone(), false, false, false, None);
     let res = app
@@ -163,7 +158,6 @@ async fn rejects_path_traversal() {
 
 #[tokio::test]
 async fn range_requests_return_partial_content_like_serve() {
-    // real `serve` (via the `send` library) supports byte-range requests -> 206 Partial Content
     let fx = Fixture::new();
     let app = build_app(fx.root.clone(), false, false, false, None);
     let res = app
@@ -181,7 +175,6 @@ async fn range_requests_return_partial_content_like_serve() {
 
 #[tokio::test]
 async fn cors_header_absent_by_default_present_with_flag() {
-    // real `serve` sends no CORS headers unless explicitly enabled
     let fx = Fixture::new();
     let app = build_app(fx.root.clone(), false, false, false, None);
     let res = app
@@ -219,8 +212,6 @@ async fn cors_header_absent_by_default_present_with_flag() {
 
 #[tokio::test]
 async fn conditional_get_returns_304_without_any_flag() {
-    // real `serve`'s caching is conditional-request based (ETag/Last-Modified -> 304);
-    // this works out of the box via the underlying file service, no opt-in needed.
     let fx = Fixture::new();
     let app = build_app(fx.root.clone(), false, false, false, None);
     let res = app
@@ -244,7 +235,6 @@ async fn conditional_get_returns_304_without_any_flag() {
 
 #[tokio::test]
 async fn cache_control_absent_by_default_present_with_flag() {
-    // real `serve` never sends Cache-Control; ours only does when `-c/--cache-control` is set
     let fx = Fixture::new();
     let app = build_app(fx.root.clone(), false, false, false, None);
     let res = app

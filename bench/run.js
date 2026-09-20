@@ -1,9 +1,5 @@
 #!/usr/bin/env node
 // Benchmark: fast-static-server (Rust) vs npm `serve`, same fixture, same load profile.
-//
-// Usage:
-//   npm install   (once, installs autocannon + serve as devDependencies)
-//   npm run bench [-- --duration=10 --connections=50]
 
 "use strict";
 
@@ -59,9 +55,7 @@ async function waitForReady(url, timeoutMs = 5000) {
     try {
       const res = await fetch(url);
       if (res.ok || res.status === 404) return;
-    } catch {
-      // not up yet
-    }
+    } catch {}
     await new Promise((r) => setTimeout(r, 100));
   }
   throw new Error(`server at ${url} did not become ready in ${timeoutMs}ms`);
@@ -96,10 +90,8 @@ function curlOnce(url) {
   });
 }
 
-// Cross-checks the large-file number against a real transfer, bypassing autocannon
-// entirely: raw `curl` processes, one TCP connection per request, no shared client-side
-// event loop to bottleneck on. Confirms whether a slow "large" result is the server or
-// the benchmark client.
+// Bypasses autocannon (one TCP connection per curl process) to tell a slow "large"
+// result apart from the benchmark client itself being the bottleneck.
 async function curlCrossCheck(url, connections) {
   const deadline = Date.now() + CROSS_CHECK_DURATION * 1000;
   const start = Date.now();
@@ -137,7 +129,7 @@ async function curlCrossCheck(url, connections) {
 async function benchmarkTarget(name, spawnServer, fixtureDir) {
   const port = claimPort();
   const child = spawnServer(fixtureDir, port);
-  child.stdout?.resume(); // drain, don't inherit: keep console output to our own report
+  child.stdout?.resume(); // drain without inheriting
   child.stderr?.resume();
 
   const baseUrl = `http://127.0.0.1:${port}`;
@@ -150,9 +142,7 @@ async function benchmarkTarget(name, spawnServer, fixtureDir) {
       url: baseUrl + scenario.path,
       connections: CONNECTIONS,
       duration: DURATION,
-      // autocannon's receive-side work (buffering/discarding response bodies) runs
-      // single-threaded by default and becomes the bottleneck itself on the large-file
-      // scenario well before the server does - spread it across worker threads.
+      // avoids autocannon's single-threaded receive path bottlenecking large-file runs
       workers: 4,
     });
   }
