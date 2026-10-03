@@ -16,7 +16,7 @@
     "publish:all": "bun run publish:cargo && bun run publish:npm && bun run publish:jsr"
   },
   "devDependencies": {
-    "oxfmt": "^0.68.0",
+    "oxfmt": "^0.71.0",
     "oxlint": "^1.83.0",
     "turbo": "^2.11.2"
   },
